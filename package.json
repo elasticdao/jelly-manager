@@ -1,0 +1,15 @@
+{
+  "name": "jelly-manager",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@pie-dao/utils": "^1.0.0",
+    "discord.js": "^12.5.1",
+    "esm": "^3.2.25",
+    "redis": "^3.0.2"
+  },
+  "scripts": {
+    "start": "node -r esm src/index.js"
+  }
+}
