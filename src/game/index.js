@@ -20,7 +20,7 @@ Object.keys(emoji).forEach((key) => {
 export default class JellyJamGame {
   constructor(channel) {
     this.channel = channel;
-    this.inputDelay = 7500;
+    this.inputDelay = 12000;
     this.renderDelay = 2000;
     this.stage = '1';
     setTimeout(() => this.start(), 0);
