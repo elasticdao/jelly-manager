@@ -3,6 +3,8 @@ import { isAddress } from '@pie-dao/utils';
 import { promisify } from 'util';
 import Redis from 'redis';
 
+import JellyJamGame from './game/index.js';
+
 const redis = Redis.createClient();
 const getAsync = promisify(redis.get).bind(redis);
 const setAsync = promisify(redis.set).bind(redis);
@@ -10,7 +12,7 @@ const setAsync = promisify(redis.set).bind(redis);
 const deleteAddress = async (user, address) => {
   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
   ogMembers.delete(address);
-  await setAsync('ogMembers', JSON.stringify(Array.from(ogMembers))),
+  await setAsync('ogMembers', JSON.stringify(Array.from(ogMembers)));
   redis.del(`${user.id}|address`);
   redis.del(address);
 };
@@ -53,6 +55,7 @@ class DiscordActions {
     if (content.match(/^!jelly_init/)) {
       message.delete();
       this.guildMemberJoin(message);
+      return;
     }
 
     if (content.match(/^!jelly_forget_me/)) {
@@ -60,6 +63,19 @@ class DiscordActions {
       deleteAddress(author, storedAddress);
       message.delete();
       dmChannel.send('I no longer know what your address is. If you want me to have it, message me with it again.');
+      return;
+    }
+
+    if (content.match(/^!jelly_jam/)) {
+      new JellyJamGame(message.channel);
+      message.delete();
+      return;
+    }
+
+    if (content.match(/^reset_jelly_jam/)) {
+      jellyJamRound = 0;
+      message.delete();
+      return;
     }
 
     const address = await detectNewETHAddress(content);
@@ -95,7 +111,6 @@ class DiscordActions {
       return;
     }
 
-    message.delete();
     const roles = await guild.roles.fetch();
 
     const role = roles.cache.findKey((role) => role.name === 'OG');
