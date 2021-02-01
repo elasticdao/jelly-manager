@@ -10,13 +10,13 @@ const redis = Redis.createClient();
 const getAsync = promisify(redis.get).bind(redis);
 const setAsync = promisify(redis.set).bind(redis);
 
-const deleteAddress = async (user, address) => {
-  const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
-  ogMembers.delete(address);
-  await setAsync('ogMembers', JSON.stringify(Array.from(ogMembers)));
-  redis.del(`${user.id}|address`);
-  redis.del(address);
-};
+// const deleteAddress = async (user, address) => {
+//   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
+//   ogMembers.delete(address);
+//   await setAsync('ogMembers', JSON.stringify(Array.from(ogMembers)));
+//   redis.del(`${user.id}|address`);
+//   redis.del(address);
+// };
 
 const detectETHAddress = (str) => str.split(' ').find(isAddress);
 
@@ -32,15 +32,15 @@ const detectNewETHAddress = async (str) => {
   return false;
 };
 
-const registerAddress = async (user, address) => {
-  const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
-  ogMembers.add(address);
-  await Promise.all([
-    setAsync('ogMembers', JSON.stringify(Array.from(ogMembers))),
-    setAsync(address, user.id),
-    setAsync(`${user.id}|address`, address),
-  ]);
-};
+// const registerAddress = async (user, address) => {
+//   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
+//   ogMembers.add(address);
+//   await Promise.all([
+//     setAsync('ogMembers', JSON.stringify(Array.from(ogMembers))),
+//     setAsync(address, user.id),
+//     setAsync(`${user.id}|address`, address),
+//   ]);
+// };
 
 class DiscordActions {
   constructor(client) {
@@ -117,17 +117,12 @@ class DiscordActions {
       return;
     }
 
-    const roles = await guild.roles.fetch();
+    // const roles = await guild.roles.fetch();
 
-    const newRole = roles.cache.findKey((role) => role.name === 'OG');
+    // const role = roles.cache.findKey((role) => role.name === 'OG');
 
-    await guildMember.edit({ roles: [newRole] }, 'Joined and verified during OG period');
-    await dmChannel.send(
-      'Thanks for verifying that you are not a fellow bot. ' +
-        'You are now an OG member of the ElasticDAO community. ' +
-        "If you'd like to get a POAP token proving this, " +
-        'reply to this message with your (public) ETH address.',
-    );
+    //await guildMember.edit({ roles: [role] }, 'Joined and verified during OG period');
+    await dmChannel.send(`Thanks for verifying that you are not a fellow bot. You are now a member of the ElasticDAO community!`);
 
     await Promise.all([
       setAsync(`${userKey}|dmChannelId`, dmChannel.id),
@@ -163,4 +158,4 @@ client.on('message', (...args) => handler.incoming(...args));
 
 redis.on('error', handler.redisError);
 
-client.login(process.env.TOKEN);
+client.login('Nzk1NzQzODAyOTUzMzAyMDQ3.X_N0Kg.rB5nFY8PqIyPq3--SikNA-x1K9k');
