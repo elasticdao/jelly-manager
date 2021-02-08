@@ -5,17 +5,19 @@ import Redis from 'redis';
 
 import JellyJamGame from './game/index.js';
 
+const pToken = require('./pToken.js');
 const redis = Redis.createClient();
 const getAsync = promisify(redis.get).bind(redis);
 const setAsync = promisify(redis.set).bind(redis);
+const emojiPack = ['👍', '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿'];
 
-// const deleteAddress = async (user, address) => {
-//   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
-//   ogMembers.delete(address);
-//   await setAsync('ogMembers', JSON.stringify(Array.from(ogMembers)));
-//   redis.del(`${user.id}|address`);
-//   redis.del(address);
-// };
+ const deleteAddress = async (user, address) => {
+   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
+   ogMembers.delete(address);
+   await setAsync('ogMembers', JSON.stringify(Array.from(ogMembers)));
+   redis.del(`${user.id}|address`);
+   redis.del(address);
+ };
 
 const detectETHAddress = (str) => {
   return str.split(' ').find(isAddress);
@@ -31,68 +33,54 @@ const detectNewETHAddress = async (str) => {
   }
 };
 
-// const registerAddress = async (user, address) => {
-//   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
-//   ogMembers.add(address);
-//   await Promise.all([
-//     setAsync('ogMembers', JSON.stringify(Array.from(ogMembers))),
-//     setAsync(address, user.id),
-//     setAsync(`${user.id}|address`, address),
-//   ]);
-// };
+ const registerAddress = async (user, address) => {
+   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
+   ogMembers.add(address);
+   await Promise.all([
+     setAsync('ogMembers', JSON.stringify(Array.from(ogMembers))),
+     setAsync(address, user.id),
+     setAsync(`${user.id}|address`, address),
+   ]);
+ };
+
 
 class DiscordActions {
   constructor(client) {
     this.client = client;
   }
 
-   async genericMessage(message) {
+    async genericMessage(message) {
      const { author, channel, content } = message;
      const isDM = channel.constructor === DMChannel;
      const dmChannel = isDM ? channel : (await author.createDM());
     console.log('Got a generic message', content, 'on channel', channel.id, 'from user', author);
-   }
+
+    if (content.match(/^!test/)) {
+         message.delete();
+         this.guildMemberJoin(message);
+         return;
+       }
   
+       if (content.match(/^!forgetMeJelly/)) {
+         const storedAddress = await getAsync(`${author.id}|address`);
+         deleteAddress(author, storedAddress);
+         message.delete();
+         dmChannel.send('I no longer know what your address is. If you want me to have it, message me with it again.');
+         return;
+       }
+  
+     const address = await detectNewETHAddress(content);
 
-    //  if (content.match(/^!jelly_init/)) {
-    //   message.delete();
-    //   this.guildMemberJoin(message);
-    //   return;
-    // }
-
-  //   if (content.match(/^!jelly_forget_me/)) {
-  //     const storedAddress = await getAsync(`${author.id}|address`);
-  //     deleteAddress(author, storedAddress);
-  //     message.delete();
-  //     dmChannel.send('I no longer know what your address is. If you want me to have it, message me with it again.');
-  //     return;
-  //   }
-
-  //   if (content.match(/^!jelly_jam/)) {
-  //     new JellyJamGame(message.channel);
-  //     message.delete();
-  //     return;
-  //   }
-
-  //   if (content.match(/^reset_jelly_jam/)) {
-  //     jellyJamRound = 0;
-  //     message.delete();
-  //     return;
-  //   }
-
-  //   const address = await detectNewETHAddress(content);
-
-  //   if (address && isDM) {
-  //     const storedAddress = await getAsync(`${author.id}|address`);
-  //     if (storedAddress) {
-  //       await deleteAddress(author, storedAddress);
-  //     }
-
-  //     await registerAddress(author, address);
-   
-  //     dmChannel.send(`Thanks ${author.username}, I've registered your ETH address. If you want me to forget it, message me with !jelly_forget_me and I'll erase my own memory of you.`);    
-  //   }
-  // }
+     if (address && isDM) {
+       const storedAddress = await getAsync(`${author.id}|address`);
+       if (storedAddress) {
+         await deleteAddress(author, storedAddress);
+        
+       await registerAddress(author, address);  
+       dmChannel.send(`Thanks ${author.username}, I've registered your ETH address. If you want me to forget it, message me with !jelly_forget_me and I'll erase my own memory of you.`);    
+     }
+   }
+  }
 
   async guildMemberJoin({ author, channel: { guild } }) {
     let message;
@@ -101,10 +89,12 @@ class DiscordActions {
     const dmChannel = await author.createDM();
     message = await dmChannel.send(`Welcome to ElasticDAO ${author.username}! I'm you're friendly neighborhood Jellyfish, here for your enjoyment. Please confirm that you're a human by reacting to this with a thumbsup emoji in the next 5 minutes.`);
 
-    const guildMember = guild.member(author);    
+    const guildMember = guild.member(author);
 
     const timeoutPid = setTimeout(() => this.kickUser(guildMember, 'Captcha Timeout', message), 300000);
-    const filter = (reaction) => reaction.emoji.name === '👍';
+    
+    const filter = (reaction) => reaction.emoji.name = emojiPack.includes('👍', '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿');
+    
     const collected = await message.awaitReactions(filter, { max: 1, time: 300000 });
 
     if (collected.size === 1) {
@@ -114,10 +104,9 @@ class DiscordActions {
     }
 
     // const roles = await guild.roles.fetch();
-
     // const role = roles.cache.findKey((role) => role.name === 'OG');
+    // await guildMember.edit({ roles: [role] }, 'Joined and verified during OG period');
 
-    //await guildMember.edit({ roles: [role] }, 'Joined and verified during OG period');
     await dmChannel.send(`Thanks for verifying that you are not a fellow bot. You are now a member of the ElasticDAO community!`);
 
     await Promise.all([
@@ -174,4 +163,24 @@ client.on('message', (...args) => handler.incoming(...args));
 
 redis.on('error', handler.redisError);
 
-client.login('Nzk1NzQzODAyOTUzMzAyMDQ3.X_N0Kg.rB5nFY8PqIyPq3--SikNA-x1K9k');
+client.login(process.env.TOKEN);
+
+
+
+//  const deleteAddress = async (user, address) => {
+//   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
+//   ogMembers.delete(address);
+//   await setAsync('ogMembers', JSON.stringify(Array.from(ogMembers)));
+//   redis.del(`${user.id}|address`);
+//   redis.del(address);
+// };
+
+// const registerAddress = async (user, address) => {
+//   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
+//   ogMembers.add(address);
+//   await Promise.all([
+//     setAsync('ogMembers', JSON.stringify(Array.from(ogMembers))),
+//     setAsync(address, user.id),
+//     setAsync(`${user.id}|address`, address),
+//   ]);
+// };
