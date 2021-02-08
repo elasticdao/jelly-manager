@@ -272,6 +272,13 @@ combined-stream@^1.0.8:
   dependencies:
     delayed-stream "~1.0.0"
 
+commander@~1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-1.1.1.tgz#50d1651868ae60eccff0a2d9f34595376bc6b041"
+  integrity sha1-UNFlGGiuYOzP8KLZ80WVN2vGsEE=
+  dependencies:
+    keypress "0.1.x"
+
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
@@ -332,6 +339,13 @@ denque@^1.4.1:
   resolved "https://registry.yarnpkg.com/denque/-/denque-1.5.0.tgz#773de0686ff2d8ec2ff92914316a47b73b1c73de"
   integrity sha512-CYiCSgIF1p6EUByQPlGkKnP1M9g0ZV3qMIrqMqZqdwazygIA/YP2vrbcyl1h/WppKJTdl1F85cXIle+394iDAQ==
 
+describe@>=0.8.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/describe/-/describe-1.2.0.tgz#3b42efa6dca1aa2445ef6d15c19854de583711c0"
+  integrity sha1-O0LvptyhqiRF720VwZhU3lg3EcA=
+  dependencies:
+    string-color ">= 0.8.0"
+
 discord.js@^12.5.1:
   version "12.5.1"
   resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-12.5.1.tgz#992b45753e3815526a279914ccc281d3496f5990"
@@ -360,6 +374,15 @@ doctrine@^3.0.0:
   integrity sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==
   dependencies:
     esutils "^2.0.2"
+discord@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/discord/-/discord-0.8.2.tgz#8cb3ebf9f2e90594554d0c3734c99af87bb0b770"
+  integrity sha1-jLPr+fLpBZRVTQw3NMma+Huwt3A=
+  dependencies:
+    describe ">=0.8.0"
+    glob ">3.0.1"
+    mootools ">=1.4.4"
+    string-color ">=0.8.0"
 
 elliptic@6.5.3:
   version "6.5.3"
@@ -1015,6 +1038,17 @@ lru-cache@^6.0.0:
   integrity sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==
   dependencies:
     yallist "^4.0.0"
+js@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/js/-/js-0.1.0.tgz#e1d0afd55ea39c2b28da304e8143eaf2c133f366"
+  integrity sha1-4dCv1V6jnCso2jBOgUPq8sEz82Y=
+  dependencies:
+    commander "~1.1.1"
+
+keypress@0.1.x:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/keypress/-/keypress-0.1.0.tgz#4a3188d4291b66b4f65edb99f806aa9ae293592a"
+  integrity sha1-SjGI1CkbZrT2XtuZ+AaqmuKTWSo=
 
 mime-db@1.45.0:
   version "1.45.0"
@@ -1064,6 +1098,10 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
+mootools@>=1.4.4:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/mootools/-/mootools-1.5.2.tgz#1fddf1b4e0a9e65d20d483b9b4b08e1e87b1161a"
+  integrity sha1-H93xtOCp5l0g1IO5tLCOHoexFho=
 
 node-fetch@^2.6.1:
   version "2.6.1"
@@ -1414,6 +1452,10 @@ string-width@^4.2.0:
     emoji-regex "^8.0.0"
     is-fullwidth-code-point "^3.0.0"
     strip-ansi "^6.0.0"
+"string-color@>= 0.8.0", string-color@>=0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/string-color/-/string-color-0.8.0.tgz#1e674c8295ce29ddd9778b6e4cb3aa5e75448403"
+  integrity sha1-HmdMgpXOKd3Zd4tuTLOqXnVEhAM=
 
 string.prototype.trimend@^1.0.3:
   version "1.0.3"
