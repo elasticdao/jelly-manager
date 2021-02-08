@@ -5,8 +5,10 @@
   "license": "MIT",
   "dependencies": {
     "@pie-dao/utils": "^1.0.0",
+    "discord": "^0.8.2",
     "discord.js": "^12.5.1",
     "esm": "^3.2.25",
+    "js": "^0.1.0",
     "redis": "^3.0.2"
   },
   "devDependencies": {
