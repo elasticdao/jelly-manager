@@ -3,3 +3,4 @@
 /src/artifacts/**/*
 
 .DS_Store
+addresses.txt
