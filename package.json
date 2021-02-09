@@ -10,6 +10,9 @@
     "redis": "^3.0.2"
   },
   "scripts": {
+    "lint": "npx eslint src/*.js src/**/*.js",
+    "prerelease": "yarn lint",
+    "release": "npm publish --access=public",
     "start": "node -r esm src/index.js"
   }
 }
