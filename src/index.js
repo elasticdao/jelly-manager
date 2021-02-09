@@ -105,10 +105,6 @@ class DiscordActions {
       return;
     }
 
-    // const roles = await guild.roles.fetch();
-    // const role = roles.cache.findKey((role) => role.name === 'OG');
-    // await guildMember.edit({ roles: [role] }, 'Joined and verified during OG period');
-
     await dmChannel.send(`Thanks for verifying that you are not a fellow bot. You are now a member of the ElasticDAO community!`);
 
     await Promise.all([
@@ -147,22 +143,3 @@ redis.on('error', handler.redisError);
 
 client.login(process.env.TOKEN);
 
-
-
-//  const deleteAddress = async (user, address) => {
-//   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
-//   ogMembers.delete(address);
-//   await setAsync('ogMembers', JSON.stringify(Array.from(ogMembers)));
-//   redis.del(`${user.id}|address`);
-//   redis.del(address);
-// };
-
-// const registerAddress = async (user, address) => {
-//   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
-//   ogMembers.add(address);
-//   await Promise.all([
-//     setAsync('ogMembers', JSON.stringify(Array.from(ogMembers))),
-//     setAsync(address, user.id),
-//     setAsync(`${user.id}|address`, address),
-//   ]);
-// };
