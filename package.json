@@ -9,10 +9,16 @@
     "esm": "^3.2.25",
     "redis": "^3.0.2"
   },
+  "devDependencies": {
+    "eslint": "^7.10.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "prettier": "^2.1.1"
+  },
   "scripts": {
-    "lint": "npx eslint src/*.js src/**/*.js",
-    "prerelease": "yarn lint",
-    "release": "npm publish --access=public",
+    "lint": "yarn run prettier && yarn run lint:js",
+    "lint:js": "npx eslint src/*.js src/**/*.js",
+    "prettier": "npx prettier --write src/*.js --write src/**/*.js --write src/**/**/*.js --write src/**/**/**/*.js",
     "start": "node -r esm src/index.js"
   }
 }
