@@ -6,11 +6,10 @@ import Redis from 'redis';
 import Handler from './Handler';
 import JellyJamGame from './game/index';
 
-const pToken = require('./pToken.js');
+
 const redis = Redis.createClient();
 const getAsync = promisify(redis.get).bind(redis);
 const setAsync = promisify(redis.set).bind(redis);
-const emojiPack = ['👍', '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿'];
 
  const deleteAddress = async (user, address) => {
    const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
@@ -95,7 +94,7 @@ class DiscordActions {
 
     const timeoutPid = setTimeout(() => this.kickUser(guildMember, 'Captcha Timeout', message), 300000);
     
-    const filter = (reaction) => reaction.emoji.name = emojiPack.includes('👍', '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿');
+    const filter = (reaction) => reaction.emoji.name === '👍';
     
     const collected = await message.awaitReactions(filter, { max: 1, time: 300000 });
 
@@ -148,21 +147,3 @@ redis.on('error', handler.redisError);
 client.login(process.env.TOKEN);
 
 
-
-//  const deleteAddress = async (user, address) => {
-//   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
-//   ogMembers.delete(address);
-//   await setAsync('ogMembers', JSON.stringify(Array.from(ogMembers)));
-//   redis.del(`${user.id}|address`);
-//   redis.del(address);
-// };
-
-// const registerAddress = async (user, address) => {
-//   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
-//   ogMembers.add(address);
-//   await Promise.all([
-//     setAsync('ogMembers', JSON.stringify(Array.from(ogMembers))),
-//     setAsync(address, user.id),
-//     setAsync(`${user.id}|address`, address),
-//   ]);
-// };
