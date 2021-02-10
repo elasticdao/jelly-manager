@@ -100,8 +100,6 @@ class DiscordActions {
 
     if (collected.size === 1) {
       clearTimeout(timeoutPid);
-    } else {
-      return;
     };
 
     await dmChannel.send(`Thanks for verifying that you are not a fellow bot. You are now a member of the ElasticDAO community!`);
@@ -121,8 +119,8 @@ class DiscordActions {
 
     const dmChannel = await guildMember.createDM();
     await dmChannel.send(
-      'I\'m sorry but I\'ve had to kick you due to a lack of response. ' +
-        'Please join ElasticDAO again if you\'re human.',
+      `I'm sorry but I've had to kick you due to a lack of response. ` +
+        `Please join ElasticDAO again if you're human.`,
     );
 
     guildMember.kick(reason);
