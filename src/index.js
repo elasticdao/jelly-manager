@@ -2,13 +2,13 @@ import { Client, DMChannel } from 'discord.js';
 import { isAddress } from '@pie-dao/utils';
 import { promisify } from 'util';
 import Redis from 'redis';
-
 import Handler from './Handler';
-import JellyJamGame from './game/index';
+// import JellyJamGame from './game/index';
 
 const redis = Redis.createClient();
 const getAsync = promisify(redis.get).bind(redis);
 const setAsync = promisify(redis.set).bind(redis);
+const emojiPack = ['👍', '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿'];
 
 const deleteAddress = async (user, address) => {
   const ogMembers = new Set(JSON.parse((await getAsync('ogMembers')) || '[]'));
@@ -53,13 +53,13 @@ class DiscordActions {
     const dmChannel = isDM ? channel : await author.createDM();
     console.log('Got a generic message', content, 'on channel', channel.id, 'from user', author);
 
-    if (content.match(/^!jelly_init/)) {
+    if (content.match(/^!test/)) {
       message.delete();
       this.guildMemberJoin(message);
       return;
     }
 
-    if (content.match(/^!jelly_forget_me/)) {
+    if (content.match(/^!forgetMeJelly/)) {
       const storedAddress = await getAsync(`${author.id}|address`);
       deleteAddress(author, storedAddress);
       message.delete();
@@ -69,25 +69,18 @@ class DiscordActions {
       return;
     }
 
-    if (content.match(/^!jelly_jam/)) {
-      JellyJamGame.start(message.channel);
-      message.delete();
-      return;
-    }
-
     const address = await detectNewETHAddress(content);
 
     if (address && isDM) {
       const storedAddress = await getAsync(`${author.id}|address`);
       if (storedAddress) {
         await deleteAddress(author, storedAddress);
+
+        await registerAddress(author, address);
+        dmChannel.send(
+          `Thanks ${author.username}, I've registered your ETH address. If you want me to forget it, message me with !jelly_forget_me and I'll erase my own memory of you.`,
+        );
       }
-
-      await registerAddress(author, address);
-
-      dmChannel.send(
-        `Thanks ${author.username}, I've registered your ETH address. If you want me to forget it, message me with !jelly_forget_me and I'll erase my own memory of you.`,
-      );
     }
   }
 
@@ -105,11 +98,10 @@ class DiscordActions {
       () => this.kickUser(guildMember, 'Captcha Timeout', message),
       300000,
     );
-    const filter = (reaction) => reaction.emoji.name === '👍';
-    const collected = await message.awaitReactions(filter, {
-      max: 1,
-      time: 300000,
-    });
+
+    const filter = (reaction) => emojiPack.includes(reaction.emoji.name);
+
+    const collected = await message.awaitReactions(filter, { max: 1, time: 300000 });
 
     if (collected.size === 1) {
       clearTimeout(timeoutPid);
@@ -117,16 +109,8 @@ class DiscordActions {
       return;
     }
 
-    const roles = await guild.roles.fetch();
-
-    const newRole = roles.cache.findKey((role) => role.name === 'OG');
-
-    await guildMember.edit({ roles: [newRole] }, 'Joined and verified during OG period');
     await dmChannel.send(
-      'Thanks for verifying that you are not a fellow bot. ' +
-        'You are now an OG member of the ElasticDAO community. ' +
-        "If you'd like to get a POAP token proving this, " +
-        'reply to this message with your (public) ETH address.',
+      'Thanks for verifying that you are not a fellow bot. You are now a member of the ElasticDAO community!',
     );
 
     await Promise.all([
