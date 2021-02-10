@@ -147,6 +147,4 @@ client.on('message', (...args) => handler.incoming(...args));
 
 redis.on('error', handler.redisError);
 
-// client.login(process.env.TOKEN);
-
-client.login('Nzk1NzQzODAyOTUzMzAyMDQ3.X_N0Kg.y1oRpRJhbFNxm42N_k0AxndIV4w');
+client.login(process.env.TOKEN);
