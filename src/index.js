@@ -2,11 +2,10 @@ import { Client, DMChannel } from 'discord.js';
 import { isAddress } from '@pie-dao/utils';
 import { promisify } from 'util';
 import Redis from 'redis';
-
 import Handler from './Handler';
-import JellyJamGame from './game/index';
 
-const pToken = require('./pToken.js');
+// import JellyJamGame from './game/index';
+
 const redis = Redis.createClient();
 const getAsync = promisify(redis.get).bind(redis);
 const setAsync = promisify(redis.set).bind(redis);
